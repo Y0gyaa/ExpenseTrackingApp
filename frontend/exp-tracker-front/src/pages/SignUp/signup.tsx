@@ -37,7 +37,7 @@ const SignUp = () => {
   });
 
   const onSubmit = (data: SignUpFormData) => {
-    console.log("Sign-Up Data:", data);
+    //console.log("Sign-Up Data:", data);
     alert("Sign-Up successful!");
   };
 
