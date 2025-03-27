@@ -24,12 +24,12 @@ dist-ssr
 *.sw?
 
 #node modules
-frontend\exp-tracker-front\node_modules
+frontend/exp-tracker-front/node_modules
 
-#py files
-expense-tracker-app\pyvenv.cfg
-expense-tracker-app\Lib
-expense-tracker-app\Scripts
-expense-tracker-app\backend\db.sqlite3
-expense-tracker-app\backend\backend\__pycache__
+#py files and dir
+expense-tracker-app/pyvenv.cfg
+expense-tracker-app/Lib
+expense-tracker-app/Scripts
+expense-tracker-app/backend/db.sqlite3
+expense-tracker-app/backend/backend/__pycache__
 
