@@ -14,6 +14,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
 import { signUpUser } from "../../redux/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 // Zod schema
 const signUpSchema = z
@@ -33,6 +34,7 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 
 const SignUp = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { loading, error } = useSelector((state: RootState) => state.auth);
   const {
     register,
@@ -44,6 +46,7 @@ const SignUp = () => {
 
   const onSubmit = (data: SignUpFormData) => {
     dispatch(signUpUser({ username: data.name, email: data.email, password: data.password }));
+    navigate("/signin")
   };
 
   return (

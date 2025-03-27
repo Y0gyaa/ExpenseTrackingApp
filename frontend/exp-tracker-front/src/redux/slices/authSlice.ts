@@ -1,16 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-interface SignUpState {
+interface AuthState {
   loading: boolean;
   user: any;
   error: string | null;
+  token: string | null;
 }
 
-const initialState: SignUpState = {
+const initialState: AuthState = {
   loading: false,
   user: null,
   error: null,
+  token: localStorage.getItem("token") || null,
 };
 
 // Signup API Call
@@ -21,6 +23,7 @@ export const signUpUser = createAsyncThunk(
       const response = await axios.post("http://127.0.0.1:8000/register/", userData, {
         headers: { "Content-Type": "application/json","Access-Control-Allow-Credentials": "true" },// Include cookies l8r 
       });
+      localStorage.setItem("user_id", response.data.user_id)
       //response.data todo user id store 
       return response.data; 
     } catch (error: any) {
@@ -35,8 +38,8 @@ export const signInUser = createAsyncThunk(
         try {
             const res = await axios.post("http://127.0.0.1:8000/login/", userData, {
                 headers: { "Content-Type": "application/json","Access-Control-Allow-Credentials": "true" },
-            });
-            console.log(res)
+            });  
+            localStorage.setItem("token", res.data.token)      
             return res.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || "Could not Sign In")
@@ -47,7 +50,13 @@ export const signInUser = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    logout: (state) => {
+      state.user = null;
+      state.token = null;
+      localStorage.removeItem("token");
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(signUpUser.pending, (state) => {
@@ -73,8 +82,10 @@ const authSlice = createSlice({
       .addCase(signInUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+        state.user = null;
       });
   },
 });
 
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;

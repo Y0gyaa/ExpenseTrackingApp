@@ -14,6 +14,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
 import { signInUser } from "../../redux/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 
 // Zod schema
@@ -27,6 +28,7 @@ type SignInFormData = z.infer<typeof signInSchema>;
 
 const SignIn = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { loading, error } = useSelector((state: RootState) => state.auth);
   const {
     register,
@@ -38,6 +40,7 @@ const SignIn = () => {
 
   const onSubmit = (data: SignInFormData) => {
       dispatch(signInUser({ username: data.name, password: data.password }));
+      navigate("/dashboard")
     };
 
   return (

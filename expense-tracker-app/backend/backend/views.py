@@ -42,6 +42,18 @@ class DeleteUserView(DestroyAPIView):
     permission_classes = [IsAuthenticated]  
 
 
+"""User log out (POST)"""
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated] 
+
+    def post(self, request):
+        try:
+            request.user.auth_token.delete()  # Delete user's token
+            return Response({"message": "Logged out successfully"}, status=200)
+        except Token.DoesNotExist:
+            return Response({"error": "User not logged in"}, status=400)
+
+
 """Testing playing around; Will delete later"""
 class ProtectedView(APIView):
     permission_classes = [IsAuthenticated]
