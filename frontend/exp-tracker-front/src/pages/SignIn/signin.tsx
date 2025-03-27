@@ -8,12 +8,17 @@ import {
   Typography,
   Container,
   Avatar,
+  Alert
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../redux/store";
+import { signInUser } from "../../redux/slices/authSlice";
+
 
 // Zod schema
 const signInSchema = z.object({
-  email: z.string().min(1, "Email is required").email("Invalid email format"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
@@ -21,6 +26,8 @@ const signInSchema = z.object({
 type SignInFormData = z.infer<typeof signInSchema>;
 
 const SignIn = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, error } = useSelector((state: RootState) => state.auth);
   const {
     register,
     handleSubmit,
@@ -30,9 +37,8 @@ const SignIn = () => {
   });
 
   const onSubmit = (data: SignInFormData) => {
-    console.log("Sign-In Data:", data);
-    alert("Sign-In successful!");
-  };
+      dispatch(signInUser({ username: data.name, password: data.password }));
+    };
 
   return (
     <Container maxWidth="xs">
@@ -54,6 +60,7 @@ const SignIn = () => {
         <Typography variant="h5" component="h1">
           Sign In
         </Typography>
+        {error && <Alert severity="error">{error}</Alert>}
         <Box
           component="form"
           onSubmit={handleSubmit(onSubmit)}
@@ -61,10 +68,10 @@ const SignIn = () => {
         >
           <TextField
             fullWidth
-            label="Email"
-            {...register("email")}
-            error={!!errors.email}
-            helperText={errors.email?.message}
+            label="UserName"
+            {...register("name")}
+            error={!!errors.name}
+            helperText={errors.name?.message}
             margin="normal"
           />
           <TextField
@@ -81,6 +88,7 @@ const SignIn = () => {
             fullWidth
             variant="contained"
             sx={{ mt: 2, bgcolor: "primary.main" }}
+            disabled = {loading}
           >
             Sign In
           </Button>

@@ -8,10 +8,14 @@ import {
   Typography,
   Container,
   Avatar,
+  Alert,
 } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../redux/store";
+import { signUpUser } from "../../redux/slices/authSlice";
 
-// Define Zod schema
+// Zod schema
 const signUpSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -24,10 +28,12 @@ const signUpSchema = z
     path: ["confirmPassword"],
   });
 
-// Define TypeScript type from Zod schema
+
 type SignUpFormData = z.infer<typeof signUpSchema>;
 
 const SignUp = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, error } = useSelector((state: RootState) => state.auth);
   const {
     register,
     handleSubmit,
@@ -37,8 +43,7 @@ const SignUp = () => {
   });
 
   const onSubmit = (data: SignUpFormData) => {
-    //console.log("Sign-Up Data:", data);
-    alert("Sign-Up successful!");
+    dispatch(signUpUser({ username: data.name, email: data.email, password: data.password }));
   };
 
   return (
@@ -61,6 +66,7 @@ const SignUp = () => {
         <Typography variant="h5" component="h1">
           Sign Up
         </Typography>
+        {error && <Alert severity="error">{error}</Alert>}
         <Box
           component="form"
           onSubmit={handleSubmit(onSubmit)}
@@ -106,9 +112,10 @@ const SignUp = () => {
             fullWidth
             variant="contained"
             sx={{ mt: 2, bgcolor: "primary.main" }}
+            disabled={loading}
           >
             Sign Up
-          </Button>
+          </Button>          
           <a className="text-sm" href="/signin">Sign in?</a>
         </Box>
       </Box>
