@@ -10,52 +10,51 @@ from rest_framework.response import Response
 
 User = get_user_model()
 
-"""User is created (POST), response is username,
-     email and user_id"""
+
 class RegisterUserView(CreateAPIView):
+    """User is created (POST), response is username,
+     email and user_id"""
     serializer_class = UserSerializer
     permission_classes = [AllowAny] 
 
 
-"""User log in (POST) with username and password 
+class DeleteUserView(DestroyAPIView):
+    """(Delete) user with id and Authorization headers,
+     Token <token>"""
+    queryset = User.objects.all()
+    lookup_field = 'id'  
+    permission_classes = [IsAuthenticated]  
+
+
+class LoginView(APIView):    
+    """User log in (POST) with username and password 
     body. Response is Token."""
-class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
         user = authenticate(username=username, password=password)
-
         if user:
             token, created = Token.objects.get_or_create(user=user)
             return Response({"token": token.key})
-
         return Response({"error": "Invalid credentials"}, status=400)    
 
-
-"""(Delete) user with id and Authorization headers,
-     Token <token>"""
-class DeleteUserView(DestroyAPIView):
-    queryset = User.objects.all()
-    lookup_field = 'id'  
-    permission_classes = [IsAuthenticated]  
-
-
-"""User log out (POST)"""
+    
 class LogoutView(APIView):
+    """User log out (POST)"""
     permission_classes = [IsAuthenticated] 
 
     def post(self, request):
         try:
-            request.user.auth_token.delete()  # Delete user's token
+            request.user.auth_token.delete()  # Delete the user's token
             return Response({"message": "Logged out successfully"}, status=200)
         except Token.DoesNotExist:
             return Response({"error": "User not logged in"}, status=400)
 
-
-"""Testing playing around; Will delete later"""
+    
 class ProtectedView(APIView):
+    """Testing playing around; Will delete later"""
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
